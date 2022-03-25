@@ -15,7 +15,11 @@ const getItems = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const getItem = (req, res) => {};
+const getItem = async (req, res) => {
+  const { params } = req;
+  const data = await tracksModel.findOne({ _id: params.id });
+  res.send({ data });
+};
 
 /**
  * Insertar un registro en especifico
@@ -33,13 +37,25 @@ const createItem = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const updateItem = (req, res) => {};
+const updateItem = async (req, res) => {
+  const { params, body } = req;
+  const data = await tracksModel.updateOne({ _id: params.id }, body);
+  res.send({
+    msg: `El tracks con id: ${params.id}. Fue actualizado exitosamente`,
+  });
+};
 
 /**
  * Borrar un registro en especifico
  * @param {*} req
  * @param {*} res
  */
-const deleteItem = (req, res) => {};
+const deleteItem = async (req, res) => {
+  const { params } = req;
+  const data = await tracksModel.deleteOne({ _id: params.id });
+  res.send({
+    msg: `El tracks con id: ${params.id}. Fue eliminado exitosamente`,
+  });
+};
 
 module.exports = { getItems, getItem, createItem, updateItem, deleteItem };
