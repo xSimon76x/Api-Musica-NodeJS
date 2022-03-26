@@ -7,11 +7,12 @@ const {
   updateItem,
 } = require("../controllers/tracks");
 const { validatorCreateItem } = require("../validators/tracks");
+const customHeader = require("../middleware/customHeader");
 const router = express.Router();
 
 //TODO https://localhost/tracks GET,POST,PUT,DELETE
 
-router.post("/", validatorCreateItem, createItem);
+router.post("/", validatorCreateItem, customHeader, createItem);
 router.get("/", getItems);
 
 router.get("/:id", getItem);

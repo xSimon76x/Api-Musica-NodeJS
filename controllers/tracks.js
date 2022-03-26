@@ -1,4 +1,5 @@
 const { tracksModel } = require("../models");
+const { handleHttpError } = require("../utils/handleErrors");
 
 /**
  * Obtener lista de la db
@@ -6,8 +7,12 @@ const { tracksModel } = require("../models");
  * @param {*} res
  */
 const getItems = async (req, res) => {
-  const data = await tracksModel.find({});
-  res.send({ data });
+  try {
+    const data = await tracksModel.find({});
+    res.send({ data });
+  } catch (error) {
+    handleHttpError(res, "ERROR_GET_ITEMS");
+  }
 };
 
 /**
@@ -16,9 +21,13 @@ const getItems = async (req, res) => {
  * @param {*} res
  */
 const getItem = async (req, res) => {
-  const { params } = req;
-  const data = await tracksModel.findOne({ _id: params.id });
-  res.send({ data });
+  try {
+    const { params } = req;
+    const data = await tracksModel.findOne({ _id: params.id });
+    res.send({ data });
+  } catch (error) {
+    handleHttpError(res, "ERROR_GET_ITEM");
+  }
 };
 
 /**
@@ -27,9 +36,13 @@ const getItem = async (req, res) => {
  * @param {*} res
  */
 const createItem = async (req, res) => {
-  const { body } = req;
-  const data = await tracksModel.create(body);
-  res.send({ data });
+  try {
+    const { body } = req;
+    const data = await tracksModel.create(body);
+    res.send({ data });
+  } catch (error) {
+    handleHttpError(res, "ERROR_CREATE_ITEM");
+  }
 };
 
 /**
@@ -38,11 +51,15 @@ const createItem = async (req, res) => {
  * @param {*} res
  */
 const updateItem = async (req, res) => {
-  const { params, body } = req;
-  const data = await tracksModel.updateOne({ _id: params.id }, body);
-  res.send({
-    msg: `El tracks con id: ${params.id}. Fue actualizado exitosamente`,
-  });
+  try {
+    const { params, body } = req;
+    const data = await tracksModel.updateOne({ _id: params.id }, body);
+    res.send({
+      msg: `El tracks con id: ${params.id}. Fue actualizado exitosamente`,
+    });
+  } catch (error) {
+    handleHttpError(res, "ERROR_UPDATE_ITEM");
+  }
 };
 
 /**
@@ -51,11 +68,15 @@ const updateItem = async (req, res) => {
  * @param {*} res
  */
 const deleteItem = async (req, res) => {
-  const { params } = req;
-  const data = await tracksModel.deleteOne({ _id: params.id });
-  res.send({
-    msg: `El tracks con id: ${params.id}. Fue eliminado exitosamente`,
-  });
+  try {
+    const { params } = req;
+    const data = await tracksModel.deleteOne({ _id: params.id });
+    res.send({
+      msg: `El tracks con id: ${params.id}. Fue eliminado exitosamente`,
+    });
+  } catch (error) {
+    handleHttpError(res, "ERROR_DELETE_ITEM");
+  }
 };
 
 module.exports = { getItems, getItem, createItem, updateItem, deleteItem };
