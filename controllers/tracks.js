@@ -1,3 +1,4 @@
+const { matchedData } = require("express-validator");
 const { tracksModel } = require("../models");
 const { handleHttpError } = require("../utils/handleErrors");
 
@@ -11,7 +12,7 @@ const getItems = async (req, res) => {
     const data = await tracksModel.find({});
     res.send({ data });
   } catch (error) {
-    handleHttpError(res, "ERROR_GET_ITEMS");
+    handleHttpError(res, "ERROR_LIST_ITEMS");
   }
 };
 
@@ -22,8 +23,9 @@ const getItems = async (req, res) => {
  */
 const getItem = async (req, res) => {
   try {
-    const { params } = req;
-    const data = await tracksModel.findOne({ _id: params.id });
+    req = matchedData(req);
+    const { id } = req;
+    const data = await tracksModel.findById(id);
     res.send({ data });
   } catch (error) {
     handleHttpError(res, "ERROR_GET_ITEM");
@@ -36,9 +38,10 @@ const getItem = async (req, res) => {
  * @param {*} res
  */
 const createItem = async (req, res) => {
+  // matchedData() = "Sirve para limpiar y evitar posibles campos que se ingresen por POST, y no esten definidos en el modelo, esos campos los evita y no los ingresa"
   try {
-    const { body } = req;
-    const data = await tracksModel.create(body);
+    const bodyClean = matchedData(req);
+    const data = await tracksModel.create(bodyClean);
     res.send({ data });
   } catch (error) {
     handleHttpError(res, "ERROR_CREATE_ITEM");
@@ -52,10 +55,10 @@ const createItem = async (req, res) => {
  */
 const updateItem = async (req, res) => {
   try {
-    const { params, body } = req;
-    const data = await tracksModel.updateOne({ _id: params.id }, body);
+    const { id, ...body } = matchedData(req);
+    const data = await tracksModel.findByIdAndUpdate(id, body);
     res.send({
-      msg: `El tracks con id: ${params.id}. Fue actualizado exitosamente`,
+      msg: `El tracks con id: ${id}. Fue actualizado exitosamente`,
     });
   } catch (error) {
     handleHttpError(res, "ERROR_UPDATE_ITEM");
@@ -69,11 +72,15 @@ const updateItem = async (req, res) => {
  */
 const deleteItem = async (req, res) => {
   try {
-    const { params } = req;
-    const data = await tracksModel.deleteOne({ _id: params.id });
-    res.send({
-      msg: `El tracks con id: ${params.id}. Fue eliminado exitosamente`,
-    });
+    const { id } = matchedData(req);
+
+    const data = await tracksModel.delete({ _id: id });
+    res.send(
+      { data },
+      {
+        msg: `El tracks con id: ${id}. Fue eliminado exitosamente`,
+      }
+    );
   } catch (error) {
     handleHttpError(res, "ERROR_DELETE_ITEM");
   }

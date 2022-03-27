@@ -6,17 +6,20 @@ const {
   deleteItem,
   updateItem,
 } = require("../controllers/tracks");
-const { validatorCreateItem } = require("../validators/tracks");
+const {
+  validatorCreateItem,
+  validatorGetItem,
+} = require("../validators/tracks");
 const customHeader = require("../middleware/customHeader");
 const router = express.Router();
 
 //TODO https://localhost/tracks GET,POST,PUT,DELETE
 
-router.post("/", validatorCreateItem, customHeader, createItem);
+router.post("/", validatorCreateItem, createItem);
 router.get("/", getItems);
 
-router.get("/:id", getItem);
-router.put("/:id", updateItem);
-router.delete("/:id", deleteItem);
+router.get("/:id", validatorGetItem, getItem);
+router.put("/:id", validatorGetItem, validatorCreateItem, updateItem);
+router.delete("/:id", validatorGetItem, deleteItem);
 
 module.exports = router;
