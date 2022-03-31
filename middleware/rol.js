@@ -8,7 +8,7 @@ const { handleHttpError } = require("../utils/handleErrors");
 const checkRol = (roles) => (req, res, next) => {
   try {
     const { user } = req;
-    console.log(user);
+
     const rolesByUser = user.role; // ['user]
 
     const checkValueRol = roles.some(
