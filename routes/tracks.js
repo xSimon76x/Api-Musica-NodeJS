@@ -11,15 +11,30 @@ const {
   validatorGetItem,
 } = require("../validators/tracks");
 const customHeader = require("../middleware/customHeader");
+const authMiddleware = require("../middleware/session");
+const checkRol = require("../middleware/rol");
 const router = express.Router();
 
 //TODO https://localhost/tracks GET,POST,PUT,DELETE
 
-router.post("/", validatorCreateItem, createItem);
-router.get("/", getItems);
+router.post(
+  "/",
+  authMiddleware,
+  checkRol(["admin"]),
+  validatorCreateItem,
+  createItem
+);
+router.get("/", authMiddleware, getItems);
 
-router.get("/:id", validatorGetItem, getItem);
-router.put("/:id", validatorGetItem, validatorCreateItem, updateItem);
-router.delete("/:id", validatorGetItem, deleteItem);
+router.get("/:id", authMiddleware, validatorGetItem, getItem);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  validatorGetItem,
+  validatorCreateItem,
+  updateItem
+);
+router.delete("/:id", authMiddleware, validatorGetItem, deleteItem);
 
 module.exports = router;
