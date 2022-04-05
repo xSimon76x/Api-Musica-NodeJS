@@ -16,6 +16,7 @@ const registerCtrl = async (req, res) => {
     const password = await encrypt(req.password);
     //sobreescribir contraseña ingresada por la encriptada
     const body = { ...req, password };
+
     //create e ingresar el usuario con la password encrypt al MongoDB
     const dataUser = await usersModel.create(body);
 
@@ -28,6 +29,7 @@ const registerCtrl = async (req, res) => {
 
     res.send({ data });
   } catch (error) {
+    console.log(error);
     handleHttpError(res, "ERROR_CREATE_USER");
   }
 };
@@ -40,14 +42,16 @@ const registerCtrl = async (req, res) => {
 const loginCtrl = async (req, res) => {
   try {
     req = matchedData(req);
+
     const user = await usersModel
       .findOne({ email: req.email })
-      .select("password name role email");
+      .select("password name role email"); //eliminar select para mysql
 
     if (!user) {
       handleHttpError(res, "USER_NOT_EXISTS", 404);
       return;
     }
+
     const hashPassword = user.get("password");
 
     const check = await compare(req.password, hashPassword);

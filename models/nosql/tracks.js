@@ -46,5 +46,44 @@ const TracksScheme = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+/**
+ * Implementar metodo propio con relacion a storage
+ * @param {*} name
+ * @returns
+ */
+TracksScheme.statics.findAllData = function (name) {
+  const joinData = this.aggregate([
+    // modelo Tracks
+    {
+      $lookup: {
+        from: "storages", // Relacion a storages
+        localField: "mediaId", // Campo de la tabla mediaId
+        foreignField: "_id", // relacion a Storages._id
+        as: "audio", // Nombre de la relacion, su alias
+      },
+    },
+    { $unwind: "$audio" },
+  ]);
+  return joinData;
+};
+
+TracksScheme.statics.findOneData = function (id) {
+  const joinData = this.aggregate([
+    // modelo Tracks
+    { $match: { _id: mongoose.Types.ObjectId(id) } },
+    {
+      $lookup: {
+        from: "storages", // Relacion a storages
+        localField: "mediaId", // Campo de la tabla mediaId
+        foreignField: "_id", // relacion a Storages._id
+        as: "audio", // Nombre de la relacion, su alias
+      },
+    },
+    { $unwind: "$audio" },
+  ]);
+  return joinData;
+};
+
 TracksScheme.plugin(mongooseDelete, { overrideMethods: "all" });
 module.exports = mongoose.model("tracks", TracksScheme);

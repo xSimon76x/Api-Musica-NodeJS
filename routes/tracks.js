@@ -20,7 +20,7 @@ const router = express.Router();
 router.post(
   "/",
   authMiddleware,
-  checkRol(["admin"]),
+  checkRol(["user", "admin"]),
   validatorCreateItem,
   createItem
 );
