@@ -6,12 +6,20 @@ const morganBody = require("morgan-body");
 const loggerStream = require("./utils/handleLogger");
 const { dbConnectMySQL } = require("./config/mysql");
 
+const swaggerUI = require("swagger-ui-express");
+const openApiConfiguration = require("./docs/swagger");
+
 const ENGINE_DB = process.env.ENGINE_DB;
 
 const app = express();
 
 app.use(cors());
 
+app.use(
+  "/documentation",
+  swaggerUI.serve,
+  swaggerUI.setup(openApiConfiguration)
+);
 app.use(express.json());
 app.use(express.static("storage"));
 

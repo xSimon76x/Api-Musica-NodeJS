@@ -27,6 +27,7 @@ const registerCtrl = async (req, res) => {
       user: dataUser,
     };
 
+    res.status(201);
     res.send({ data });
   } catch (error) {
     console.log(error);
@@ -43,7 +44,9 @@ const loginCtrl = async (req, res) => {
   try {
     req = matchedData(req);
 
-    const user = await usersModel.findOne({ email: req.email });
+    const user = await usersModel
+      .findOne({ email: req.email })
+      .select("password name role email");
     //eliminar select para mysql
     // agregar con nosql .select("password name role email");
 
