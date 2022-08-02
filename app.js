@@ -10,6 +10,7 @@ const swaggerUI = require("swagger-ui-express");
 const openApiConfiguration = require("./docs/swagger");
 
 const ENGINE_DB = process.env.ENGINE_DB;
+const NODE_ENV = process.env.NODE_ENV || "deveploment";
 
 const app = express();
 
@@ -33,8 +34,16 @@ morganBody(app, {
 const port = process.env.PORT || 3000;
 
 app.use("/api", require("./routes"));
-app.listen(port, () => {
-  console.log(`http://localhost:${port}`);
-});
+
+//En este caso, evitamos que cuando la libreria de "SuperTest", se quiera ocupar.
+//No pueda llegar a "chocar" con que el puerto 3000 ya esta siendo ocupado, ya que esta libreria,
+//levantara el proyecto para realizar pruebas.
+if (NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`http://localhost:${port}`);
+  });
+}
 
 ENGINE_DB === "nosql" ? dbConnectNoSQL() : dbConnectMySQL();
+
+module.exports = app;
