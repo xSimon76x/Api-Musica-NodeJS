@@ -2,6 +2,7 @@
 
 const request = require("supertest");
 const app = require("../app");
+const mongoose = require("mongoose");
 const { tokenSing } = require("../utils/handleJwt");
 const { testAuthRegister } = require("./helper/helperData");
 const { usersModel, storageModel } = require("../models");
@@ -57,4 +58,10 @@ test("debe retornar todo el detalle del item", async () => {
 
   expect(res.statusCode).toEqual(200);
   expect(body).toHaveProperty("data");
+});
+
+//*Despues de las pruebas de este archivo, cerramos el proceso
+//Con esto evitamos las fugas de memorias, hay diferentes opciones
+afterAll(() => {
+  mongoose.connection.close();
 });

@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "test:watch": "cross-env NODE_ENV=test jest --watch --silent"
+    "test": "cross-env NODE_ENV=test jest --silent --coverage",
+    "test:watch": "cross-env NODE_ENV=test jest --watch --silent --coverage"
 
   },
   "keywords": [],
@@ -39,6 +39,8 @@
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "globalTeardown":"./global-kill.js",
+    "coverageReporters": ["json", "html"]
   }
 }

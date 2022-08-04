@@ -1,5 +1,6 @@
 const request = require("supertest");
 const app = require("../app");
+const mongoose = require("mongoose");
 const { usersModel } = require("../models");
 const { testAuthLogin, testAuthRegister } = require("./helper/helperData");
 
@@ -12,7 +13,6 @@ beforeAll(async () => {
   await usersModel.deleteMany({});
 });
 
-//Borrar los datos del modelo de usuarios, ya que de momento beforeAll, no lo esta haciendo
 test("Esto debería retornar 404", async () => {
   const response = await request(app)
     .post("/api/auth/login")
@@ -47,4 +47,10 @@ test("esto deberia de retornar 200 login exitoso", async () => {
     .send(testAuthRegister);
 
   expect(response.statusCode).toEqual(200);
+});
+
+//*Despues de las pruebas de este archivo, cerramos el proceso
+//Con esto evitamos las fugas de memorias, hay diferentes opciones
+afterAll(() => {
+  mongoose.connection.close();
 });

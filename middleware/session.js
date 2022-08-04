@@ -13,6 +13,8 @@ const propertiesKey = getProperties();
  */
 const authMiddleware = async (req, res, next) => {
   try {
+    // const ENGINE_DB = process.env.ENGINE_DB;
+
     if (!req.headers.authorization) {
       handleHttpError(res, "NEED_SESSION", 401);
       return;
@@ -30,7 +32,13 @@ const authMiddleware = async (req, res, next) => {
       [propertiesKey.id]: dataToken[propertiesKey.id],
     };
 
-    const user = await usersModel.findOne(query);
+    let user = await usersModel.findOne(query);
+
+    // if (ENGINE_DB === "nosql") {
+    //   user = await usersModel.findOne(query); //se cambia findById por findOne por que el de id es de mongo
+    // } else {
+    //   user = await usersModel.findOne({ where: { id: query.id } }); //se cambia findById por findOne por que el de id es de mongo
+    // }
 
     req.user = user;
 
