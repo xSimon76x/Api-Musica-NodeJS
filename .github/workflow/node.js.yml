@@ -1,0 +1,54 @@
+name: CI/CD Curso NodeJS
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm ci && cp .env.example .env
+      - name: Run test
+        env:
+          DB_URI_TEST: ${{ secrets.DB_URI_TEST  }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK  }}
+        run: npm test && echo ::set-output name=things::$(grep "FAIL" test-output.log | wc -l)
+        id: counter
+        shell: bash
+      - name: Revisar test
+        if: steps.counter.outputs.things != '0'
+        run: exit 1
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy in EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY  }}
+          HOSTNAME: ${{ secrets.HOST_DNS }}
+          USER_NAME: ${{ secrets.USERNAME   }}
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+            #Now we have got the access of EC2 and we will start the deploy .
+            cd /home/ubuntu/curso-node-api-js &&
+            rm -rf node_modules &&
+            git checkout master &&
+            git fetch --all &&
+            git reset --hard origin/master &&
+            git pull origin master &&
+            npm ci && npm run start:prod
+          '

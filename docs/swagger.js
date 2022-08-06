@@ -13,6 +13,9 @@ const swaggerDefinition = {
     {
       url: "http://localhost:3001/api",
     },
+    {
+      url: "https://mighty-reaches-30847.herokuapp.com/api",
+    },
   ],
   components: {
     securitySchemes: {
